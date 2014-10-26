@@ -80,10 +80,12 @@ class RedisBackend(object):
 
     def set_data(self, var_lib, codgeo, obj):
         return self.connection.set(
-            "insee_data_%s:%s" % (var_lib, codgeo),
+            "insee_data_%s:%s" % (var_lib.lower(), codgeo.lower()),
             obj['value'])
 
     def get_data(self, var_lib, codgeo):
         data = self.connection.get(
-            "insee_data_%s:%s" % (var_lib, codgeo))
-        return {"value": data.decode('utf-8')}
+            "insee_data_%s:%s" % (var_lib.lower(), codgeo.lower()))
+        if data:
+            return {"value": data.decode('utf-8')}
+        return {"value": ""}

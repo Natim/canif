@@ -26,14 +26,17 @@ REQUIREMENTS = [
     'six',
     'hiredis',
     'redis',
-    'Flask'
+    'Flask',
+    'xlrd'
 ]
 DEPENDENCY_LINKS = []
 ENTRY_POINTS = {
     'console_scripts': [
-        'import_insee_variables = canif:import_insee_variables',
-        'import_insee_data = canif:import_insee_data',
-        'export_insee = canif:export_insee',
+        'import_csv_variables = canif:import_csv_variables',
+        'import_csv_data = canif:import_csv_data',
+        'export_csv = canif:export_csv',
+        'import_xls_variables = canif:import_xls_variables',
+        'import_xls_data = canif:import_xls_data',
         'canif_serve = canif.server:serve',
     ]}
 
