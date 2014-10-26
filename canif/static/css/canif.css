@@ -1,0 +1,25 @@
+body {
+	margin: 0px;
+    font-family: "proxima-nova","Proxima Nova","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
+    background-color: #EDEDEB;
+	padding-top: 70px;
+}
+
+#form-container {
+	background: #fff;
+}
+
+#form-container header {
+  background: none repeat scroll 0% 0% #FAFAFA;
+  border-bottom: 1px solid #EEE;
+  padding: 3px 15px;
+  height: 65px;
+  margin-bottom: 5px;
+}
+
+.right {
+	text-align: right;
+}

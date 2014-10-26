@@ -33,6 +33,7 @@ ENTRY_POINTS = {
         'import_insee_variables = canif:import_insee_variables',
         'import_insee_data = canif:import_insee_data',
         'export_insee = canif:export_insee',
+        'canif_serve = canif.server:serve',
     ]}
 
 if __name__ == '__main__':  # Don't run setup() when we import this module.
