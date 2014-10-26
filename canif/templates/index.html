@@ -48,26 +48,16 @@
           <h3>Export your data</h3>
         </header>
         <div class="container">
-          <form role="form">
+          <form role="form" method="post" action=".">
             <div class="form-group">
               <label for="cities" class="control-label">Select the group of cities</label>
-  		      <select id="cities" class="form-control select2-multiple" multiple>
-                <optgroup label="Alaskan/Hawaiian Time Zone">
-	                <option value="AK">Alaska</option>
-	                <option value="HI">Hawaii</option>
-                </optgroup>
-			  </select>
+  		      <input type="hidden" id="cities" class="form-control select2-multiple">
               <input type="hidden" name="cities_val" id="cities_val"/>
 		    </div>
 
             <div class="form-group">
               <label for="variables" class="control-label">Select the group of variables</label>
-  		      <select id="variables" class="form-control select2-multiple" multiple>
-                <optgroup label="Alaskan/Hawaiian Time Zone">
-	                <option value="AK">Population 1999</option>
-	                <option value="HI">Blabla</option>
-                </optgroup>
-			  </select>
+  		      <input type="hidden" id="variables" class="form-control select2-multiple">
               <input type="hidden" name="variables_val" id="variables_val"/>
 		    </div>
 
@@ -90,44 +80,73 @@
 	<script>
         $(document).ready(function() {
           $("#cities").select2({
-            placeholder: "Select the cities you want"
+            placeholder: "Select the cities you want",
+            multiple: true,
+            minimumInputLength: 3,
+            ajax: {
+              url: "/search_communes",
+              dataType: 'jsonp',
+              data: function (term, page) {
+                return {
+                  query: term,
+                };
+              },
+              results: function (data, page) {
+                var results = data.communes.map(function(commune) { 
+                    return {id: commune.codgeo, text: commune.libgeo};
+                });
+                return {results: results};
+              }
+            },
+            initSelection: function(element, callback) {
+              var id = $(element).val();
+              if (id !== "") {
+                $.ajax("/search_communes/" + id, {
+                  dataType: "jsonp"
+                }).done(function(data) {
+                  var results = data.communes.map(function(commune) {
+                    return {id: commune.codgeo, text: commune.libgeo};
+                  });
+                  callback(results);
+                });
+              }
+            }
           });
-            // minimumInputLength: 1,
-            // ajax: {
-            //   url: "/cities.json",
-            //   dataType: 'jsonp',
-            //   data: function (term, page) {
-            //     return {
-            //       q: term, // search term
-            //       page_limit: 10,
-            //     };
-            //   },
-            //   results: function (data, page) {
-            //     return {results: data.movies};
-            //   }
-            // },
-            // initSelection: function(element, callback) {
-            //   // the input tag has a value attribute preloaded that points to a preselected movie's id
-            //   // this function resolves that id attribute to an object that select2 can render
-            //   // using its formatResult renderer - that way the movie name is shown preselected
-            //   var id=$(element).val();
-            //   if (id!=="") {
-            //     $.ajax("http://api.rottentomatoes.com/api/public/v1.0/movies/"+id+".json", {
-            //       data: {
-            //       apikey: "ju6z9mjyajq2djue3gbvv26t"
-            //     },
-            //     dataType: "jsonp"
-            //     }).done(function(data) { callback(data); });
-            //   }
-            // },
-            // formatResult: movieFormatResult, // omitted for brevity, see the source of this page
-            // formatSelection: movieFormatSelection, // omitted for brevity, see the source of this page
-            // dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
-            // escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
-          // });
           $("#cities").on("change", function() { $("#cities_val").val($("#cities").val());});
 
-          $("#variables").select2({placeholder: "Select the variables you want"});
+          $("#variables").select2({
+            placeholder: "Select the variables you want",
+            multiple: true,
+            minimumInputLength: 3,
+            ajax: {
+              url: "/search_variables",
+              dataType: 'jsonp',
+              data: function (term, page) {
+                return {
+                  query: term,
+                };
+              },
+              results: function (data, page) {
+                var results = data.variables.map(function(variable) { 
+                    return {id: variable.var_id, text: variable.var_lib};
+                });
+                return {results: results};
+              }
+            },
+            initSelection: function(element, callback) {
+              var id = $(element).val();
+              if (id !== "") {
+                $.ajax("/search_variables/" + id, {
+                  dataType: "jsonp"
+                }).done(function(data) {
+                  var results = data.variables.map(function(variable) {
+                    return {id: variable.var_id, text: variable.var_lib};
+                  });
+                  callback(results);
+                });
+              }
+            }
+          });
           $("#variables").on("change", function() { $("#variables_val").val($("#variables").val());});
         });
     </script>

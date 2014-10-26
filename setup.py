@@ -25,7 +25,8 @@ REQUIREMENTS = [
     'setuptools',
     'six',
     'hiredis',
-    'redis'
+    'redis',
+    'Flask'
 ]
 DEPENDENCY_LINKS = []
 ENTRY_POINTS = {

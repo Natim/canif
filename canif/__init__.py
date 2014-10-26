@@ -4,16 +4,11 @@
 from __future__ import print_function
 import csv
 import sys
-import redis
-import json
 
-redis_settings = dict(
-    host="localhost",
-    port=6379,
-    db=1
-)
+from canif.redis import RedisBackend
+from canif.exporter import export_insee_data
 
-connection = redis.StrictRedis(**redis_settings)
+backend = RedisBackend()
 
 
 def import_insee_variables():
@@ -32,9 +27,11 @@ def import_insee_variables():
         for row in reader:
             obj = {}
             for i in range(min(len(header), len(row))):
-                obj[header[i]] = row[i]
-            connection.set("insee_variable:%s" % row[0].lower(),
-                           json.dumps(obj))
+                obj[header[i]] = row[i].strip()
+            obj["var_lib"] = "%s (%s)" % (obj['var_lib'], obj['annee'])
+            obj["var_lib_long"] = "%s (%s)" % (obj['var_lib_long'],
+                                               obj['annee'])
+            backend.set_variable(row[0].lower(), obj)
             variables += 1
 
     print("%d variables importées" % variables)
@@ -51,7 +48,7 @@ def import_insee_data():
         header = [x.lower() for x in next(reader)]
         assert header[0] == "codgeo", header[0]
         header = header[1:]
-            
+
         # Add all the codegeo
         communes = 0
         insee_values = len(header)
@@ -60,10 +57,13 @@ def import_insee_data():
             key = row[0]
             values = row[1:]
 
+            backend.set_commune(key, {
+                "codgeo": key,
+                "libgeo": values[header.index("libgeo")]
+            })
+
             for idx in range(min(len(header), len(values))):
-                connection.set(
-                    "insee_data_%s:%s" % (header[idx], key),
-                    values[idx])
+                backend.set_data(header[idx], key, {"value": values[idx]})
             communes += 1
             print("%s %d communes importées" % (sep[communes % 4], communes),
                   end="\r")
@@ -81,19 +81,9 @@ def export_insee():
                  "D75_POP"]
 
     with open(output_filename, "w") as csv_output:
-        writer = csv.writer(csv_output, delimiter=';')
-
-        # Write header
-        writer.writerow(["CODGEO"] + VARIABLES)
-
-        # For each codgeo
-        for codgeo in COMMUNES:
-            values = [codgeo]
-            for var in VARIABLES:
-                values.append(connection.get(
-                    "insee_data_%s:%s" % (var.lower(), codgeo)))
-
-            writer.writerow(values)
+        csv_output.write(
+            export_insee_data(backend, COMMUNES, VARIABLES).read()
+        )
 
     print("%s variables exportées pour %d communes soit %d valeurs" % (
         len(VARIABLES), len(COMMUNES), len(VARIABLES) * len(COMMUNES)
