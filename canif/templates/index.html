@@ -86,6 +86,7 @@
             ajax: {
               url: "/search_communes",
               dataType: 'jsonp',
+              quietMillis: 500,
               data: function (term, page) {
                 return {
                   query: term,
@@ -121,6 +122,7 @@
             ajax: {
               url: "/search_variables",
               dataType: 'jsonp',
+              quietMillis: 500,
               data: function (term, page) {
                 return {
                   query: term,
