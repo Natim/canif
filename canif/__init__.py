@@ -4,11 +4,14 @@
 from __future__ import print_function
 import sys
 
-from canif.redis import RedisBackend
 from canif.exporter import export_insee_data
 from canif.importer import csv, xls
 
-backend = RedisBackend()
+# from canif.redis import RedisBackend
+# backend = RedisBackend()
+
+from canif.elasticsearch import ElasticsearchBackend
+backend = ElasticsearchBackend()
 
 
 #######################

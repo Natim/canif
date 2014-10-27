@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Canif — Export your data</title>
+    <title>Canif — Naviguez dans les données INSEE</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Canif</a>
+          <a class="navbar-brand" href="#">Canif — Naviguez dans les données INSEE</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -45,26 +45,39 @@
     <div class="container">
       <div id="form-container" class="row">
         <header>
-          <h3>Export your data</h3>
+          <h3>Exportez vos tableaux</h3>
         </header>
         <div class="container">
           <form role="form" method="post" action=".">
             <div class="form-group">
-              <label for="cities" class="control-label">Select the group of cities</label>
+              <label for="cities" class="control-label">Sélectionnez le groupe de villes</label>
   		      <input type="hidden" id="cities" class="form-control select2-multiple">
               <input type="hidden" name="cities_val" id="cities_val"/>
 		    </div>
 
             <div class="form-group">
-              <label for="variables" class="control-label">Select the group of variables</label>
-  		      <input type="hidden" id="variables" class="form-control select2-multiple" value="libgeo,">
-              <input type="hidden" name="variables_val" id="variables_val" value="libgeo,"/>
+              <label for="variables" class="control-label">Sélectionnez les variables INSEE souhaitées</label>
+              <input type="hidden" id="variables" class="form-control select2-multiple">
+              <input type="hidden" name="variables_val" id="variables_val">
 		    </div>
 
             <div class="form-group right">
-                <button type="submit" class="btn btn-default">Let's build this !</button>
+                <button type="submit" class="btn btn-default">Téléchargez le tableau</button>
             </div>
         </form>
+      </div>
+    </div> <!-- /container -->
+
+    <div>
+      <div id="modele-container" class="row">
+        <header>
+          <h4>Sélectionnez un modèle existant</h4>
+        </header>
+        <div class="container">
+          <ul id="modeles">
+            <li><a href="#" data-variables="LIBGEO,P99_POP,P10_POP,P11_PMEN,P10_POPH,P10_POPF">Populations</a></li>
+          </ul>
+        </div>
       </div>
     </div> <!-- /container -->
 
@@ -79,8 +92,13 @@
 
 	<script>
         $(document).ready(function() {
+          $("#modeles").on("click", "a", function () {
+              $("#variables").select2("val", $(this).data("variables").split(","));
+              $("#variables_val").val($(this).data("variables").split(","));
+              return false;
+          });
           $("#cities").select2({
-            placeholder: "Select the cities you want",
+            placeholder: "Sélectionnez les villes souhaitées",
             multiple: true,
             minimumInputLength: 3,
             ajax: {
@@ -94,7 +112,7 @@
               },
               results: function (data, page) {
                 var results = data.communes.map(function(commune) { 
-                    return {id: commune.codgeo, text: commune.libgeo};
+                    return {id: commune.codgeo, text: commune.libgeo + " (" + commune.codgeo + ")"};
                 });
                 return {results: results};
               }
@@ -106,7 +124,7 @@
                   dataType: "jsonp"
                 }).done(function(data) {
                   var results = data.communes.map(function(commune) {
-                    return {id: commune.codgeo, text: commune.libgeo};
+                    return {id: commune.codgeo, text: commune.libgeo + " (" + commune.codgeo + ")"};
                   });
                   callback(results);
                 });
@@ -121,7 +139,7 @@
           });
 
           $("#variables").select2({
-            placeholder: "Select the variables you want",
+            placeholder: "Sélectionnez les variables souhaitées",
             multiple: true,
             minimumInputLength: 3,
             ajax: {

@@ -23,3 +23,15 @@ body {
 .right {
 	text-align: right;
 }
+
+#modele-container {
+  background: #fff;
+}
+
+#modele-container header {
+  background: none repeat scroll 0% 0% #FAFAFA;
+  border-bottom: 1px solid #EEE;
+  padding: 3px 15px;
+  height: 45px;
+  margin-bottom: 5px;
+}

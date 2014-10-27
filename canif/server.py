@@ -4,12 +4,22 @@ from __future__ import print_function
 from flask import Flask, request, render_template, send_file, jsonify
 from six import BytesIO
 
-from canif.redis import RedisBackend
 from canif.decorators import jsonp
 from canif.exporter import export_insee_data
 
+import logging
+logging.basicConfig()
+
+logging.getLogger('elasticsearch').setLevel(logging.DEBUG)
+logging.getLogger('urllib3').setLevel(logging.DEBUG)
+
 app = Flask(__name__)
-backend = RedisBackend()
+
+# from canif.redis import RedisBackend
+# backend = RedisBackend()
+
+from canif.elasticsearch import ElasticsearchBackend
+backend = ElasticsearchBackend()
 
 
 @app.route('/', methods=['GET'])
@@ -19,8 +29,8 @@ def index():
 
 @app.route('/', methods=['POST'])
 def upload_form():
-    communes = request.form['cities_val'].split(",")
-    variables = request.form['variables_val'].split(",")
+    communes = [c for c in request.form['cities_val'].split(",") if c]
+    variables = [v for v in request.form['variables_val'].split(",") if v]
     filename = "communes-%s-variables-%s.csv" % (
         ','.join(communes), ','.join(variables)
     )

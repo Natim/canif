@@ -27,7 +27,8 @@ REQUIREMENTS = [
     'hiredis',
     'redis',
     'Flask',
-    'xlrd'
+    'xlrd',
+    'elasticsearch'
 ]
 DEPENDENCY_LINKS = []
 ENTRY_POINTS = {
