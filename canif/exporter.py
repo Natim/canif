@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-import csv
+try:
+    import unicodecsv as csv
+except ImportError:
+    import csv
 
 from six import StringIO
 
 
 def export_insee_data(backend, communes, variables):
     csv_output = StringIO()
-    writer = csv.writer(csv_output, delimiter=';')
+    writer = csv.writer(csv_output, delimiter=';', encoding="utf-8")
 
     vars = backend.get_variables(variables)
     header_vars = [v['var_lib'] for v in vars]

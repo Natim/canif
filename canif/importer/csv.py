@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-import csv
+try:
+    import unicodecsv as csv
+except ImportError:
+    import csv
 
 
 def import_insee_variables(backend, csvfile):
     """Load a CSV file variable."""
     dialect = csv.Sniffer().sniff(csvfile.read(1024), delimiters=";,")
     csvfile.seek(0)
-    reader = csv.reader(csvfile, dialect)
+    reader = csv.reader(csvfile, dialect, encoding="utf-8")
 
     # Build the header
     header = [x.lower() for x in next(reader)]
@@ -31,7 +34,7 @@ def import_insee_data(backend, csvfile, progress=None):
     """Load a CSV file variable."""
     dialect = csv.Sniffer().sniff(csvfile.read(1024), delimiters=";,")
     csvfile.seek(0)
-    reader = csv.reader(csvfile, dialect)
+    reader = csv.reader(csvfile, dialect, encoding="utf-8")
 
     # Build the header
     header = [x.lower() for x in next(reader)]
